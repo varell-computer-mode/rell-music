@@ -1,1 +1,591 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080d1c">
+<title>Rell Music</title>
 
+<style>
+:root {
+  --bg: #080d1c;
+  --card: rgba(25, 37, 65, .75);
+  --text: #f5f7ff;
+  --muted: #9aa9c8;
+  --blue: #5793ff;
+  --border: rgba(255,255,255,.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(ellipse at top, #162951, transparent 65%),
+    var(--bg);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+  transition: .3s;
+}
+
+body.light {
+  --bg: #edf3ff;
+  --card: rgba(255,255,255,.8);
+  --text: #14213d;
+  --muted: #65738f;
+  --blue: #3478f6;
+  --border: rgba(30,60,110,.13);
+  background: linear-gradient(#dceaff, #f5f8ff);
+}
+
+header {
+  padding: 25px 20px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 700px;
+  margin: auto;
+}
+
+.logo {
+  font-size: 27px;
+  font-weight: 900;
+  letter-spacing: -1px;
+}
+
+.logo span {
+  color: var(--blue);
+}
+
+button {
+  color: var(--text);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  padding: 12px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+main {
+  max-width: 700px;
+  margin: auto;
+  padding: 12px 20px 220px;
+}
+
+.page {
+  display: none;
+}
+
+.page.active {
+  display: block;
+}
+
+h1 {
+  font-size: 30px;
+  margin-bottom: 5px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.hero {
+  margin: 24px 0;
+  padding: 25px;
+  border-radius: 27px;
+  background: linear-gradient(135deg, #285dc4, #172447 80%);
+  box-shadow: 0 15px 40px #0003;
+}
+
+.hero h2 {
+  font-size: 27px;
+  margin: 10px 0;
+}
+
+.hero p {
+  color: #d4e2ff;
+}
+
+.primary {
+  background: var(--blue);
+  color: white;
+  border: none;
+  font-weight: bold;
+}
+
+.search {
+  width: 100%;
+  margin: 20px 0;
+  padding: 16px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  border-radius: 17px;
+  font-size: 16px;
+  outline: none;
+}
+
+.track {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.cover {
+  width: 54px;
+  height: 54px;
+  flex-shrink: 0;
+  border-radius: 15px;
+  display: grid;
+  place-items: center;
+  font-size: 25px;
+  background: linear-gradient(135deg, #5793ff, #242a60);
+}
+
+.track-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.track-info strong {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.track-info small {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+}
+
+.track button {
+  padding: 10px;
+}
+
+.empty {
+  padding: 25px 5px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.player {
+  position: fixed;
+  z-index: 5;
+  bottom: 76px;
+  left: 12px;
+  right: 12px;
+  max-width: 676px;
+  margin: auto;
+  padding: 15px;
+  border-radius: 23px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  box-shadow: 0 10px 40px #0004;
+}
+
+.player-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.player-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.player-info strong {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.player-info small {
+  color: var(--muted);
+}
+
+.controls {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+}
+
+.controls button {
+  padding: 10px;
+}
+
+#playButton {
+  background: var(--blue);
+  color: white;
+  font-size: 18px;
+}
+
+#progress {
+  width: 100%;
+  accent-color: var(--blue);
+  margin-top: 13px;
+}
+
+.time {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+nav {
+  position: fixed;
+  z-index: 6;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 4px calc(10px + env(safe-area-inset-bottom));
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+}
+
+nav button {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 12px;
+  min-width: 75px;
+}
+
+nav button.active {
+  color: var(--blue);
+}
+
+nav span {
+  display: block;
+  font-size: 21px;
+  margin-bottom: 4px;
+}
+
+input[type=file] {
+  display: none;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">rell<span>music.</span></div>
+  <button id="themeButton" aria-label="Ganti tema">☀️</button>
+</header>
+
+<main>
+  <section id="home" class="page active">
+    <p class="muted">WELCOME TO YOUR MUSIC SPACE</p>
+    <h1>Feel the music. 🎧</h1>
+    <p class="muted">Musikmu, duniamu, caramu.</p>
+
+    <div class="hero">
+      <div style="font-size:38px">🎵</div>
+      <h2>Your sound.<br>Your universe.</h2>
+      <p>Dengarkan lagu favoritmu dengan Rell Music.</p>
+      <button class="primary" onclick="document.getElementById('filePicker').click()">
+        + Tambahkan lagu
+      </button>
+    </div>
+
+    <h2>Recently added</h2>
+    <div id="homeTracks"></div>
+  </section>
+
+  <section id="search" class="page">
+    <h1>Search</h1>
+    <p class="muted">Cari lagu di koleksi musikmu.</p>
+    <input id="searchInput" class="search"
+      placeholder="Cari judul lagu atau nama file...">
+    <div id="searchTracks"></div>
+  </section>
+
+  <section id="library" class="page">
+    <h1>Your Library</h1>
+    <p class="muted">Semua musikmu ada di sini.</p>
+
+    <button class="primary"
+      onclick="document.getElementById('filePicker').click()">
+      ＋ Import musik
+    </button>
+
+    <button id="favoritesButton">❤️ Favorit</button>
+    <div id="libraryTracks"></div>
+  </section>
+
+  <input id="filePicker" type="file" accept="audio/*" multiple>
+</main>
+
+<div class="player">
+  <div class="player-top">
+    <div class="cover">🎶</div>
+
+    <div class="player-info">
+      <strong id="currentTitle">Belum ada lagu</strong>
+      <small id="currentArtist">Pilih musik dari perangkatmu</small>
+    </div>
+
+    <div class="controls">
+      <button id="previousButton" aria-label="Lagu sebelumnya">⏮</button>
+      <button id="playButton" aria-label="Putar atau jeda">▶</button>
+      <button id="nextButton" aria-label="Lagu berikutnya">⏭</button>
+    </div>
+  </div>
+
+  <input id="progress" type="range" min="0" max="100" value="0">
+
+  <div class="time">
+    <span id="elapsed">0:00</span>
+    <span id="duration">0:00</span>
+  </div>
+
+  <audio id="audio"></audio>
+</div>
+
+<nav>
+  <button class="active" data-page="home">
+    <span>⌂</span>Home
+  </button>
+  <button data-page="search">
+    <span>⌕</span>Search
+  </button>
+  <button data-page="library">
+    <span>♫</span>Library
+  </button>
+</nav>
+
+<script>
+const audio = document.getElementById("audio");
+const picker = document.getElementById("filePicker");
+
+let tracks = [];
+let currentIndex = -1;
+let favorites = new Set();
+let showFavorites = false;
+
+function formatTime(seconds) {
+  if (!Number.isFinite(seconds)) return "0:00";
+  const minutes = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return minutes + ":" + String(secs).padStart(2, "0");
+}
+
+function renderTracks(targetId, list) {
+  const container = document.getElementById(targetId);
+  container.innerHTML = "";
+
+  if (!list.length) {
+    container.innerHTML =
+      '<div class="empty">Belum ada lagu. Tambahkan file musik dari HP kamu! 🎵</div>';
+    return;
+  }
+
+  list.forEach(track => {
+    const row = document.createElement("div");
+    row.className = "track";
+
+    const cover = document.createElement("div");
+    cover.className = "cover";
+    cover.textContent = "🎵";
+
+    const info = document.createElement("div");
+    info.className = "track-info";
+
+    const title = document.createElement("strong");
+    title.textContent = track.name;
+
+    const subtitle = document.createElement("small");
+    subtitle.textContent = "Musik lokal";
+
+    info.append(title, subtitle);
+
+    const play = document.createElement("button");
+    play.textContent = "▶";
+    play.setAttribute("aria-label", "Putar " + track.name);
+    play.onclick = () => playTrack(track.index);
+
+    const favorite = document.createElement("button");
+    favorite.textContent = favorites.has(track.index) ? "❤️" : "♡";
+    favorite.setAttribute("aria-label", "Ubah favorit");
+    favorite.onclick = () => {
+      if (favorites.has(track.index)) {
+        favorites.delete(track.index);
+      } else {
+        favorites.add(track.index);
+      }
+      renderAll();
+    };
+
+    row.append(cover, info, favorite, play);
+    container.appendChild(row);
+  });
+}
+
+function renderAll() {
+  renderTracks("homeTracks", tracks.slice(0, 5));
+
+  const query = document.getElementById("searchInput").value
+    .toLowerCase();
+
+  renderTracks("searchTracks", tracks.filter(track =>
+    track.name.toLowerCase().includes(query)
+  ));
+
+  const library = showFavorites
+    ? tracks.filter(track => favorites.has(track.index))
+    : tracks;
+
+  renderTracks("libraryTracks", library);
+}
+
+picker.addEventListener("change", event => {
+  const files = Array.from(event.target.files || []);
+
+  files.forEach(file => {
+    const index = tracks.length;
+
+    tracks.push({
+      name: file.name.replace(/\.[^/.]+$/, ""),
+      file,
+      index,
+      url: URL.createObjectURL(file)
+    });
+  });
+
+  renderAll();
+
+  if (currentIndex === -1 && tracks.length) {
+    playTrack(tracks.length - files.length);
+  }
+
+  picker.value = "";
+});
+
+function playTrack(index) {
+  if (index < 0 || index >= tracks.length) return;
+
+  currentIndex = index;
+  const track = tracks[index];
+
+  audio.src = track.url;
+  document.getElementById("currentTitle").textContent = track.name;
+  document.getElementById("currentArtist").textContent = "Musik lokal";
+
+  audio.play().then(() => {
+    document.getElementById("playButton").textContent = "⏸";
+  }).catch(() => {
+    document.getElementById("playButton").textContent = "▶";
+  });
+}
+
+document.getElementById("playButton").onclick = () => {
+  if (currentIndex === -1) {
+    if (tracks.length) playTrack(0);
+    else picker.click();
+    return;
+  }
+
+  if (audio.paused) {
+    audio.play().then(() => {
+      document.getElementById("playButton").textContent = "⏸";
+    }).catch(() => {});
+  } else {
+    audio.pause();
+  }
+};
+
+audio.addEventListener("play", () => {
+  document.getElementById("playButton").textContent = "⏸";
+});
+
+audio.addEventListener("pause", () => {
+  document.getElementById("playButton").textContent = "▶";
+});
+
+document.getElementById("nextButton").onclick = () => {
+  if (tracks.length) playTrack((currentIndex + 1) % tracks.length);
+};
+
+document.getElementById("previousButton").onclick = () => {
+  if (tracks.length) {
+    playTrack((currentIndex - 1 + tracks.length) % tracks.length);
+  }
+};
+
+audio.addEventListener("timeupdate", () => {
+  const progress = document.getElementById("progress");
+
+  if (audio.duration) {
+    progress.value = audio.currentTime / audio.duration * 100;
+  }
+
+  document.getElementById("elapsed").textContent =
+    formatTime(audio.currentTime);
+
+  document.getElementById("duration").textContent =
+    formatTime(audio.duration);
+});
+
+document.getElementById("progress").addEventListener("input", event => {
+  if (audio.duration) {
+    audio.currentTime = Number(event.target.value) / 100 * audio.duration;
+  }
+});
+
+audio.addEventListener("ended", () => {
+  if (tracks.length > 1) {
+    playTrack((currentIndex + 1) % tracks.length);
+  }
+});
+
+document.getElementById("searchInput").addEventListener("input", renderAll);
+
+document.getElementById("favoritesButton").onclick = () => {
+  showFavorites = !showFavorites;
+  document.getElementById("favoritesButton").textContent =
+    showFavorites ? "♫ Semua lagu" : "❤️ Favorit";
+  renderAll();
+};
+
+document.getElementById("themeButton").onclick = () => {
+  document.body.classList.toggle("light");
+
+  document.getElementById("themeButton").textContent =
+    document.body.classList.contains("light") ? "🌙" : "☀️";
+};
+
+document.querySelectorAll("nav button").forEach(button => {
+  button.onclick = () => {
+    document.querySelectorAll("nav button").forEach(item =>
+      item.classList.remove("active")
+    );
+
+    document.querySelectorAll(".page").forEach(page =>
+      page.classList.remove("active")
+    );
+
+    button.classList.add("active");
+    document.getElementById(button.dataset.page).classList.add("active");
+  };
+});
+
+renderAll();
+</script>
+
+</body>
+</html>
